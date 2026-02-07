@@ -1,0 +1,55 @@
+{% extends 'messenger/base.html' %}
+{% block title %} Список рассылок {% endblock %}
+{% block content %}
+{% include 'messenger/header.html' %}
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">Рассылки</h1>
+</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col" class="col-2">Номер</th>
+      <th scope="col" class="col-3">Тема</th>
+      <th scope="col" class="col-5">Текст сообщения</th>
+      <th scope="col" class="col-5">Время</th>
+      <th scope="col" class="col-2">Статус</th>
+      <th scope="col" class="col-2">Детали</th>
+      <th scope="col" class="col-2">Отправка</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for object in objects_list %}
+    <tr>
+      <th scope="row">{{ object.id }}</th>
+      <td>{{ object.message.theme_mail }}</td>
+      <td>{{ object.message.text_mail | truncatechars:50 }}</td>
+      <td>{{ object.start_time }} - {{ object.end_time }}</td>
+      {% if object.status == "on_moderation" %}
+      <td class="btn btn-secondary">{{ object.get_status_display }}</td>
+      {% elif object.status == "created" %}
+      <td class="btn btn-outline-info">{{ object.get_status_display }}</td>
+      {% elif object.status == "started" %}
+      <td class="btn btn-primary">{{ object.get_status_display }}</td>
+      {% elif object.status == "completed" %}
+      <td class="btn btn-success">{{ object.get_status_display }}</td>
+      {% elif object.status == "failed" %}
+      <td class="btn btn-danger">{{ object.get_status_display }}</td>
+      {% endif %}
+      <td >
+          <a class="btn btn-primary btn-sm" href="{% url 'messenger:detail_mailing' object.id %}" role="button">Подробнее</a>
+      </td>
+      <td>
+        {% if object.status != "started" %}
+        <a href="{% url 'messenger:error' %}" class="btn btn-secondary btn-sm">Отправить</a>
+        {% elif object.status == "started"%}
+        <form method="post" action="{% url 'messenger:send_mailing' object.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-success btn-sm">Отправить</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

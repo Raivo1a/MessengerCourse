@@ -1,0 +1,40 @@
+{% extends 'messenger/base.html' %}
+{% load my_tags %}
+{% block title %} Пользователи {% endblock %}
+{% block content %}
+{% include 'messenger/header.html' %}
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">Список зарегистрированных пользователей</h1>
+</div>
+<div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col" class="col-2">Номер п/п</th>
+          <th scope="col" class="col-3">Ф.И.О.</th>
+          <th scope="col" class="col-5">Номер телефона</th>
+          <th scope="col" class="col-5">Адрес электронной почты</th>
+          <th scope="col" class="col-2">Страна проживания</th>
+          <th scope="col" class="col-2">Статус</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for object in objects_list %}
+        <tr>
+          <th scope="row">{{ object.id }}</th>
+          <td>{{ object.username }}</td>
+          <td>{{ object.phone_number }}</td>
+          <td>{{ object.email }}</td>
+          <td>{{ object.country }}</td>
+          {% if object.is_active == True %}
+          <td><a class="btn btn-success" href="{% url 'users:user_update' object.id %}" role="button">Активный</a></td>
+          {% elif object.is_active == False %}
+          <td><a class="btn btn-danger" href="{% url 'users:user_update' object.id %}" role="button">Заблокированный</a></td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <a class="btn btn-primary" href="{% url 'messenger:home'%}" role="button">На главную</a>
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'messenger/base.html' %}
+{% block title %} Ошибка {% endblock %}
+{% block content %}
+{% include 'messenger/header.html' %}
+<div class="container">
+    <h2 class="card-title pricing-card-title">Ошибка:</h2>
+            <p>Текущее время находится между временем начала и временем окончания, отправка не разрешена</p>
+    <a class="btn btn-primary" href="{% url 'messenger:list_mailing'%}" role="button">Назад</a>
+</div>
+{% endblock %}

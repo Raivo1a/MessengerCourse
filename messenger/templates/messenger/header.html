@@ -1,0 +1,74 @@
+<div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
+    <div class="container">
+      <div class="row">
+          <div class="col-1">
+            <a class="p-2 btn btn-outline-primary" href="{% url 'messenger:home' %}">Главная</a>
+          </div>
+          <div class="col-8">
+              {% if user.is_authenticated %}
+              <nav class="ms-5">
+                <div class="btn-group">
+                  <button type="button" class="p-2 btn btn-outline-primary">Рассылки</button>
+                  <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'messenger:list_mailing' %}">Посмотреть рассылки</a></li>
+                    {% if not 'Moderator' in user.groups.all|join:',' %}
+                    <li><a class="dropdown-item" href="{% url 'messenger:create_mailing' %}">Создать рассылку</a></li>
+                    {% endif %}
+                  </ul>
+                </div>
+                <div class="btn-group">
+                  <button type="button" class="p-2 btn btn-outline-primary">Сообщения</button>
+                  <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'messenger:list_email' %}">Посмотреть сообщения</a></li>
+                    {% if not 'Moderator' in user.groups.all|join:',' %}
+                    <li><a class="dropdown-item" href="{% url 'messenger:create_email' %}">Создать сообщение для рассылки</a></li>
+                    {% endif %}
+                  </ul>
+                </div>
+                <div class="btn-group">
+                  <button type="button" class="p-2 btn btn-outline-primary">Получатели</button>
+                  <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'messenger:list_subscriber' %}">Посмотреть получателей</a></li>
+                    {% if not 'Moderator' in user.groups.all|join:',' %}
+                    <li><a class="dropdown-item" href="{% url 'messenger:create_subscriber' %}">Создать получателя для рассылки</a></li>
+                    {% endif %}
+                  </ul>
+                </div>
+                {% if 'Moderator' in user.groups.all|join:',' %}
+                <div class="btn-group">
+                  <button type="button" class="p-2 btn btn-outline-primary">Пользователи</button>
+                  <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'users:user_list' %}">Посмотреть пользователей</a></li>
+                  </ul>
+                </div>
+                {% endif %}
+              </nav>
+              {% endif %}
+          </div>
+          <div class="col-3">
+            {% if user.is_authenticated %}
+            <form action="{% url 'users:logout' %}" method="post">
+                {% csrf_token %}
+                <a class="btn btn-primary btn-sm" href="{% url 'users:user_detail' user.id%}" role="button">{{ user }}</a>
+                <button type="submit" class="p-2 btn btn-inline-danger">Выйти</button>
+            </form>
+            {% else %}
+            <a class="p-2 btn btn-inline-primary" href="{% url 'users:login' %}">Войти</a>
+            <a class="btn btn-primary" href="{% url 'users:new_user_create' %}" role="button">Регистрация</a>
+            {% endif %}
+          </div>
+      </div>
+    </div>
+</div>

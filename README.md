@@ -7,7 +7,7 @@
 ## Установка
 
 Клонируйте репозиторий:
-git@github.com:Raivo1a/MessangerCourse.git
+git@github.com:Raivo1a/MessengerCourse.git
 
 ### ЧАСТЬ 1. Разработка сервиса
 1. Управление клиентами

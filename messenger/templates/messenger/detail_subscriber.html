@@ -1,0 +1,18 @@
+{% extends 'messenger/base.html' %}
+{% block title %} Создание сообщения для рассылки {% endblock %}
+{% block content %}
+{% include 'messenger/header.html' %}
+{% if not 'Moderator' in user.groups.all|join:',' %}
+<div class="container">
+    <h2 class="card-title pricing-card-title">Просмотр получателя:</h2>
+            <p>Ф.И.О.: {{ object }}</p>
+            <p>Адрес электронной почты: {{ object.email }}</p>
+            <p>Комментарий: {{ object.description }}</p>
+    <a class="btn btn-primary" href="{% url 'messenger:list_subscriber'%}" role="button">Назад</a>
+    <a class="btn btn-primary" href="{% url 'messenger:update_subscriber' object.id %}" role="button">Изменить</a>
+    <a class="btn btn-danger" href="{% url 'messenger:delete_subscriber' object.id %}" role="button">Удалить</a>
+</div>
+{% else %}
+<h2 class="card-title pricing-card-title">У Вас нет прав доступа</h2>
+{% endif %}
+{% endblock %}

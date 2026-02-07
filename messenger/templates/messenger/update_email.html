@@ -1,0 +1,10 @@
+{% extends 'messenger/base.html' %}
+{% block title %} Редактирование сообщения для рассылки {% endblock %}
+{% block content %}
+{% include 'messenger/header.html' %}
+<form method="post" action="" class="form-floating">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary" type="submit">Подтвердить</button>
+</form>
+{% endblock %}
