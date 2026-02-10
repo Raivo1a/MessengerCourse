@@ -1,0 +1,18 @@
+{% extends 'messenger/base.html' %}
+{% block title %} Удаление профиля {% endblock %}
+{% block content %}
+{% include 'messenger/header.html' %}
+<div class="col-lg-3 col-md-6 col-sm-12" >
+    <div class="card mb-4 box-shadow">
+        <div class="card-body" >
+          <h1 class="mb-4"> Удаление профиля</h1>
+          <p>Вы уверены, что хотите удалить профиль?</p>
+            <form method="post" action="" class="form-floating">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-lg btn-block btn-outline-danger">Удалить</button>
+                <a class="btn btn-primary" href="{% url 'users:user_update' %}" role="button">Отмена</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

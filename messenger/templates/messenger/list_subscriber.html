@@ -1,0 +1,44 @@
+{% extends 'messenger/base.html' %}
+{% block title %} Получатели {% endblock %}
+{% block content %}
+{% include 'messenger/header.html' %}
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    {% if not 'Moderator' in user.groups.all|join:',' %}
+    <h1 class="display-4">Получатели</h1>
+    {% else %}
+    <h1 class="display-4">Получатели пользователей</h1>
+    {% endif %}
+</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col" class="col-2">Номер п/п</th>
+      <th scope="col" class="col-3">Ф.И.О.</th>
+      <th scope="col" class="col-3">E-mail</th>
+      <th scope="col" class="col-6">Комментарий</th>
+      {% if not 'Moderator' in user.groups.all|join:',' %}
+      <th scope="col" class="col-1"></th>
+      {% else %}
+      <th scope="col" class="col-6">Владелец получателя</th>
+      {% endif %}
+    </tr>
+  </thead>
+  <tbody>
+  {% for object in objects_list %}
+    <tr>
+      <th scope="row">{{ object.id }}</th>
+      <td>{{ object }}</td>
+      <td>{{ object.email }}</td>
+      <td>{{ object.description | truncatechars:100 }}</td>
+      <td >
+          {% if not 'Moderator' in user.groups.all|join:',' %}
+          <a class="btn btn-primary btn-sm" href="{% url 'messenger:detail_subscriber' object.id %}" role="button">Подробнее</a>
+          {% else %}
+          <a class="btn btn-primary btn-sm" href="{% url 'users:user_detail' object.owner.id %}" role="button">{{ object.owner }}</a>
+          {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

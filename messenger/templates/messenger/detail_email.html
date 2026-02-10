@@ -1,0 +1,17 @@
+{% extends 'messenger/base.html' %}
+{% block title %} Детальная информация о сообщении для рассылки {% endblock %}
+{% block content %}
+{% include 'messenger/header.html' %}
+{% if not 'Moderator' in user.groups.all|join:',' %}
+<div class="container">
+    <h2 class="card-title pricing-card-title">Просмотр сообщения:</h2>
+            <p>Тема: {{ object.theme_mail }}</p>
+            <p>Текст: {{ object.text_mail }}</p>
+    <a class="btn btn-primary" href="{% url 'messenger:list_email'%}" role="button">Назад</a>
+    <a class="btn btn-primary" href="{% url 'messenger:update_email' object.id %}" role="button">Изменить</a>
+    <a class="btn btn-danger" href="{% url 'messenger:delete_message' object.id %}" role="button">Удалить</a>
+</div>
+{% else %}
+<h2 class="card-title pricing-card-title">У Вас нет прав доступа</h2>
+{% endif %}
+{% endblock %}

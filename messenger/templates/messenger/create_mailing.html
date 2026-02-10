@@ -1,0 +1,12 @@
+{% extends 'messenger/base.html' %}
+{% block title %} Создание рассылки {% endblock %}
+{% block content %}
+{% include 'messenger/header.html' %}
+<form method="post" action="" class="form-floating" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+        <button class="btn btn-primary" type="submit">Создать рассылку</button>
+    <a class="btn btn-primary" href="{% url 'messenger:list_mailing'%}" role="button">Назад</a>
+</form>
+
+{% endblock %}

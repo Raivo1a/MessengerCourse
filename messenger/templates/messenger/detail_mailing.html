@@ -1,0 +1,23 @@
+{% extends 'messenger/base.html' %}
+{% block title %} Детальная информация о рассылке {% endblock %}
+{% block content %}
+{% include 'messenger/header.html' %}
+<div class="container">
+    <h2 class="card-title pricing-card-title">Просмотр рассылки:</h2>
+        <p>Тема рассылки: {{ object.message.theme_mail }}</p>
+        <p>Статус рассылки: {{ object.get_status_display }}</p>
+        <p>Получатели: </p>
+        <ul>
+          {% for recipient in object.recipients.all %}
+            <li>{{ recipient.email }} - {{ recipient }}</li>
+          {% empty %}
+            <li>Получатели не указаны</li>
+          {% endfor %}
+        </ul>
+    <a class="btn btn-primary" href="{% url 'messenger:list_mailing'%}" role="button">К списку рассылок</a>
+    <a class="btn btn-primary" href="{% url 'messenger:update_mailing' object.id %}" role="button">Изменить</a>
+    {% if not 'Moderator' in user.groups.all|join:',' %}
+    <a class="btn btn-danger" href="{% url 'messenger:delete_mailing' object.id %}" role="button">Удалить</a>
+    {% endif %}
+</div>
+{% endblock %}

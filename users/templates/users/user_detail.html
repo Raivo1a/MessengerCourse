@@ -1,0 +1,18 @@
+{% extends 'messenger/base.html' %}
+{% load my_tags %}
+{% block title %} {{ object.username }} {% endblock %}
+{% block content %}
+{% include 'messenger/header.html' %}
+<div class="container">
+    <h2 class="card-title pricing-card-title">Пользовательская информация:</h2>
+        <p>Ф.И.О.: {{ object.username }}</p>
+        {% if object.avatar %}
+        <img  src="{{ object.avatar | media_filter }}" >
+        {% endif %}
+        <p>Телефон: {{ object.phone_number }}</p>
+        <p>Адрес электронной почты: {{ object.email }}</p>
+        <p>Страна проживания: {{ object.country }}</p>
+    <a class="btn btn-primary" href="{% url 'messenger:home'%}" role="button">Назад</a>
+    <a class="btn btn-primary" href="{% url 'users:user_update' object.id %}" role="button">Редактировать</a>
+</div>
+{% endblock %}
