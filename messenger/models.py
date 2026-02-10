@@ -150,6 +150,7 @@ class MailingAttempt(models.Model):
     details = models.TextField(verbose_name="Детали отправки", blank=True, null=True)
     attempt_time = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    server_response = models.TextField(verbose_name="Ответ сервера", blank=True, null=True)
 
     class Meta:
         verbose_name = "Попытка отправки рассылки"

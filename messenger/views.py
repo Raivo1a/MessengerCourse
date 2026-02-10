@@ -84,7 +84,7 @@ class HomeView(TemplateView):
         user = self.request.user
         if not user.is_authenticated:
             return context
-        if user.is_authenticated and not user.groups.filter(name="Менеджер").exists():
+        if user.is_authenticated:
             context = super().get_context_data(**kwargs)
             context["messages"] = MailingAttempt.objects.filter(mailing__owner=user).aggregate(
                 ok_cnt=Count("id", filter=Q(status="ok")),
@@ -94,8 +94,9 @@ class HomeView(TemplateView):
                 count=Count("id"),
             )
             context["mailing_stats"] = Mailing.get_user_stats(self.request.user)
-        if user.is_authenticated and user.groups.filter(name="Менеджер").exists():
             return context
+        # if user.is_authenticated and user.groups.filter(name="Менеджер").exists():
+        #     return context
         else:
             return context
 
@@ -136,13 +137,12 @@ class EmailMessageListView(LoginRequiredMixin, ListView):
     context_object_name = "objects_list"
 
     def get_queryset(self):
-        user = self.request.user
-        queryset = super().get_queryset()
-        if user.is_authenticated and not user.groups.filter(name="Менеджер").exists():
-            return queryset.filter(owner=user)
-        if user.groups.filter(name="Менеджер").exists():
-            return queryset
-        return self.model.objects.none()
+        cache_key = f'user_{self.request.user.id}_messages_list'
+        queryset = cache.get(cache_key)
+        if queryset is None:
+            queryset = super().get_queryset()
+            cache.set(cache_key, queryset, timeout=60*10)
+        return queryset
 
 
 class EmailMessageUpdateView(LoginRequiredMixin, UpdateView):
@@ -183,9 +183,9 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy("messenger:list_mailing")
 
     def form_valid(self, form):
-        mail_mailing = form.save()
-        mail_mailing.owner = self.request.user
-        mail_mailing.save()
+        # mail_mailing = form.save()
+        form.instance.owner = self.request.user
+        # mail_mailing.save()
         cache.delete(f"user_{self.request.user.id}_messages")
         return super().form_valid(form)
 
@@ -211,6 +211,10 @@ class MailingListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user = self.request.user
+
+        context['is_manager'] = user.groups.filter(name="Менеджер").exists()
+
         for mailing in context["object_list"]:
             mailing.update_status()
         return context
@@ -227,7 +231,7 @@ class MailingDetailView(LoginRequiredMixin, DetailView):
         if obj is None:
             obj = super().get_object(queryset)
             obj.update_status()
-            cache.set(cache_key, obj)
+            cache.set(cache_key, obj, timeout=60*15)
         return obj
 
 
@@ -281,7 +285,16 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
 
 def post_mail_command(pk):
     mailing = get_object_or_404(Mailing, pk=pk)
-    send_mailing(pk)
+    response_text = send_mailing(pk)
+    MailingAttempt.objects.create(
+        mailing=mailing,
+        recipients=mailing.subscriber,
+        status='ok' if not response_text or 'error' not in response_text.lower() else 'failed',
+        is_sending=False,
+        details=response_text,
+        server_response=response_text,
+        attempt_time=timezone.now()
+    )
     mailing.status = "completed"
     mailing.end_time = timezone.now()
     mailing.save()
@@ -301,3 +314,32 @@ def post_mail(request, pk):
 
 class ErrorView(TemplateView):
     template_name = "messenger/error.html"
+
+
+class MailingAttemptsListView(LoginRequiredMixin, ListView):
+    model = MailingAttempt
+    template_name = "messenger/mailing_attempts_list.html"
+    context_object_name = "attempts"
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = super().get_queryset()
+        return qs.filter(mailing__owner=user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+
+        is_manager = user.groups.filter(name="Менеджер").exists()
+        context['is_manager'] = is_manager
+
+        attempts_qs = context['attempts']
+        first_attempt = attempts_qs.first()
+
+        owns_first_attempt = False
+        if first_attempt:
+            mailing_owner = first_attempt.mailing.owner
+            owns_first_attempt = mailing_owner == user
+        context['owns_first_attempt'] = owns_first_attempt
+
+        return context

@@ -1,0 +1,47 @@
+{% extends 'messenger/base.html' %}
+{% block title %}Попытки рассылок{% endblock %}
+{% block content %}
+{% include 'messenger/header.html' %}
+
+<h1>Попытки рассылок</h1>
+
+{% load group_permissions %}
+
+{% if is_manager or owns_first_attempt %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Дата и время</th>
+                <th>Статус</th>
+                <th>Ответ сервера</th>
+                <th>Рассылка</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for attempt in attempts %}
+            <tr>
+                <td>{{ attempt.attempt_time|date:"Y-m-d H:i:s" }}</td>
+                <td>
+                    {% if attempt.status == 'Успешно' %}
+                        <span>{{ attempt.status }}</span>
+                    {% else %}
+                        <span>{{ attempt.status }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ attempt.server_response }}</td>
+                <td>
+                    <a href="{% url 'messenger:detail_mailing' attempt.mailing.id %}">
+                        Рассылка #{{ attempt.mailing.id }}
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">Нет попыток рассылок.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+{% endblock %}

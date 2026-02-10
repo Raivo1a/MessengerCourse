@@ -21,7 +21,7 @@ from messenger.views import (
     MailingUpdateView,
     MailingDeleteView,
     post_mail,
-    ErrorView,
+    ErrorView, MailingAttemptsListView,
 )
 
 app_name = MessengerConfig.name
@@ -45,6 +45,7 @@ urlpatterns = [
     path("delete_subscriber/<int:pk>/", SubscriberDeleteView.as_view(), name="delete_subscriber"),
     path("update_subscriber/<int:pk>/", SubscriberUpdateView.as_view(), name="update_subscriber"),
     path("error/", ErrorView.as_view(), name="error"),
+    path('mailing-attempts/', MailingAttemptsListView.as_view(), name='mailing_attempts_list'),
 ]
 
 if settings.DEBUG:

@@ -64,6 +64,7 @@
                 <a class="btn btn-primary btn-sm" href="{% url 'users:user_detail' user.id%}" role="button">{{ user }}</a>
                 <button type="submit" class="p-2 btn btn-inline-danger">Выйти</button>
             </form>
+            <a href="{% url 'messenger:mailing_attempts_list' %}" class="btn btn-outline-secondary btn-sm ms-2">Попытки рассылки</a>
             {% else %}
             <a class="p-2 btn btn-inline-primary" href="{% url 'users:login' %}">Войти</a>
             <a class="btn btn-primary" href="{% url 'users:new_user_create' %}" role="button">Регистрация</a>
